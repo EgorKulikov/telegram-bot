@@ -279,7 +279,7 @@ impl Message {
                     title: title.clone(),
                 },
             }),
-            _ => return Err(format!("invalid forward fields combination")),
+            _ => None,
         };
 
         let make_message = |kind| {
@@ -434,7 +434,7 @@ impl ChannelPost {
                     title: title.clone(),
                 },
             }),
-            _ => return Err(format!("invalid forward fields combination")),
+            _ => None,
         };
 
         let make_message = |kind| {
