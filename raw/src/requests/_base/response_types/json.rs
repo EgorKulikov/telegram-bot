@@ -35,25 +35,26 @@ impl JsonResponse for JsonTrueToUnitResponse {
 }
 
 impl<Resp: JsonResponse> ResponseType for Resp
-where
-    <Resp as JsonResponse>::Raw: DeserializeOwned,
+    where
+        <Resp as JsonResponse>::Raw: DeserializeOwned,
 {
     type Type = <Resp as JsonResponse>::Type;
 
     fn deserialize(resp: HttpResponse) -> Result<Self::Type, Error> {
         if let Some(body) = resp.body.as_ref() {
-            eprintln!("body: {}", String::from_utf8(body.clone()).unwrap());
             let raw = serde_json::from_slice(body).map_err(ErrorKind::from)?;
             match raw {
                 ResponseWrapper::Success { result } => Ok(<Self as JsonResponse>::map(result)),
                 ResponseWrapper::Error {
                     description,
                     parameters,
-                } => Err(ErrorKind::TelegramError {
-                    description,
-                    parameters,
+                } => {
+                    eprintln!("body: {}", String::from_utf8(body.clone()).unwrap());
+                    Err(ErrorKind::TelegramError {
+                        description,
+                        parameters,
+                    }.into())
                 }
-                .into()),
             }
         } else {
             Err(ErrorKind::EmptyBody.into())
