@@ -57,9 +57,9 @@ pub enum UpdateKind {
     ChatMember(ChatMemberUpdate),
     #[serde(rename = "chat_join_request")]
     ChatJoinRequest(ChatJoinRequest),
-    #[serde(rename = "chat_boost_updated")]
+    #[serde(rename = "chat_boost")]
     ChatBoostUpdated(ChatBoostUpdated),
-    #[serde(rename = "chat_boost_removed")]
+    #[serde(rename = "removed_chat_boost")]
     ChatBoostRemoved(ChatBoostRemoved),
     #[doc(hidden)]
     Error(String),
