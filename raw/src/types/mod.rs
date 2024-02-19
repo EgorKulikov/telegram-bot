@@ -17,6 +17,8 @@ pub mod shipping_query;
 pub mod text;
 pub mod update;
 pub mod chat_join_request;
+pub mod chat_boost_updated;
+pub mod chat_boost_removed;
 
 pub use self::callback_query::*;
 pub use self::chat::*;
