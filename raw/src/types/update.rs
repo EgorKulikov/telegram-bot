@@ -58,5 +58,6 @@ pub enum UpdateKind {
     #[doc(hidden)]
     Error(String),
     #[doc(hidden)]
+    #[serde(other)]
     Unknown,
 }
