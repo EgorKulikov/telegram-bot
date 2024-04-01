@@ -16,7 +16,7 @@ async fn run_test(api: Api, message: Message) -> Result<(), Error> {
         .await?;
     api.send(chat.document(&file).caption("Direct to chat"))
         .await?;
-    api.send(message.from.document(&file).caption("Send to user"))
+    api.send(message.as_ref().unwrap().from.document(&file).caption("Send to user"))
         .await?;
 
     // With custom thumbnail
