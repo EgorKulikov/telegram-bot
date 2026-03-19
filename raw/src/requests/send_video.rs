@@ -4,7 +4,7 @@ use crate::requests::*;
 use crate::types::*;
 
 /// Use this method to send an video
-#[derive(Debug, Clone, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, PartialEq)]
 #[must_use = "requests do nothing unless sent"]
 pub struct SendVideo<'c> {
     chat_id: ChatRef,
@@ -15,7 +15,7 @@ pub struct SendVideo<'c> {
     width: Option<Integer>,
     height: Option<Integer>,
     supports_streaming: bool,
-    thumb: Option<InputFile>,
+    thumbnail: Option<InputFile>,
     reply_to_message_id: Option<MessageId>,
     disable_notification: bool,
     reply_markup: Option<ReplyMarkup>,
@@ -33,7 +33,7 @@ impl<'c> ToMultipart for SendVideo<'c> {
             (width (text), optional);
             (height (text), optional);
             (supports_streaming (text), when_true);
-            (thumb (raw), optional);
+            (thumbnail (raw), optional);
             (reply_to_message_id (text), optional);
             (disable_notification (text), when_true);
             (reply_markup (json), optional);
@@ -65,18 +65,18 @@ impl<'c> SendVideo<'c> {
             width: None,
             height: None,
             supports_streaming: false,
-            thumb: None,
+            thumbnail: None,
             reply_to_message_id: None,
             reply_markup: None,
             disable_notification: false,
         }
     }
 
-    pub fn thumb<V>(&mut self, thumb: V) -> &mut Self
+    pub fn thumbnail<V>(&mut self, thumbnail: V) -> &mut Self
     where
         V: Into<InputFileUpload>,
     {
-        self.thumb = Some(thumb.into().into());
+        self.thumbnail = Some(thumbnail.into().into());
         self
     }
 

@@ -1,7 +1,7 @@
 use crate::types::*;
 
 /// This object contains information about an incoming shipping query.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct ShippingQuery {
     /// Unique query identifier
     pub id: CallbackQueryId,

@@ -1,6 +1,6 @@
 use crate::{Chat, ChatInviteLink, Integer, User};
 
-#[derive(Debug, Clone, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct ChatJoinRequest {
     /// Chat the user belongs to
     pub chat: Chat,
@@ -10,6 +10,8 @@ pub struct ChatJoinRequest {
     pub date: Integer,
     /// Previous information about the chat member
     pub bio: Option<String>,
+    /// Identifier of a private chat with the user who sent the join request.
+    pub user_chat_id: Option<Integer>,
     /// Chat invite link, which was used by the user to join the chat; for joining by invite link events only.
     pub invite_link: Option<ChatInviteLink>,
 }

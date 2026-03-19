@@ -5,7 +5,7 @@ use crate::requests::*;
 use crate::types::*;
 
 /// Use this method to send text messages.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[must_use = "requests do nothing unless sent"]
 pub struct SendMessage<'s> {
     chat_id: ChatRef,

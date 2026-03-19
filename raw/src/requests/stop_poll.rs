@@ -2,7 +2,7 @@ use crate::requests::*;
 use crate::types::*;
 
 /// Use this method to stop a poll which was sent by the bot.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[must_use = "requests do nothing unless sent"]
 pub struct StopPoll {
     chat_id: ChatRef,

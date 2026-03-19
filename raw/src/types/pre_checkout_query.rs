@@ -1,7 +1,7 @@
 use crate::types::*;
 
 /// This object contains information about an incoming pre-checkout query.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct PreCheckoutQuery {
     /// Unique query identifier
     pub id: CallbackQueryId,
@@ -20,7 +20,7 @@ pub struct PreCheckoutQuery {
 }
 
 /// This object represents information about an order.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct OrderInfo {
     /// Optional. User name
     pub name: Option<String>,
@@ -33,7 +33,7 @@ pub struct OrderInfo {
 }
 
 /// This object represents a shipping address.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct ShippingAddress {
     /// ISO 3166-1 alpha-2 country code
     pub country_code: String,

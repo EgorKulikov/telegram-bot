@@ -2,7 +2,7 @@ use crate::requests::*;
 use crate::types::*;
 
 /// Use this method to receive incoming updates using long polling.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[must_use = "requests do nothing unless sent"]
 pub struct GetUpdates {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -54,7 +54,7 @@ impl GetUpdates {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum AllowedUpdate {
     #[serde(rename = "message")]
     Message,
@@ -64,9 +64,17 @@ pub enum AllowedUpdate {
     ChannelPost,
     #[serde(rename = "edited_channel_post")]
     EditedChannelPost,
+    #[serde(rename = "business_connection")]
+    BusinessConnection,
+    #[serde(rename = "business_message")]
+    BusinessMessage,
+    #[serde(rename = "edited_business_message")]
+    EditedBusinessMessage,
+    #[serde(rename = "deleted_business_messages")]
+    DeletedBusinessMessages,
     #[serde(rename = "inline_query")]
     InlineQuery,
-    #[serde(rename = "chosen_inline_query")]
+    #[serde(rename = "chosen_inline_result")]
     ChosenInlineResult,
     #[serde(rename = "callback_query")]
     CallbackQuery,
@@ -74,4 +82,24 @@ pub enum AllowedUpdate {
     ShippingQuery,
     #[serde(rename = "pre_checkout_query")]
     PreCheckoutQuery,
+    #[serde(rename = "poll")]
+    Poll,
+    #[serde(rename = "poll_answer")]
+    PollAnswer,
+    #[serde(rename = "my_chat_member")]
+    MyChatMember,
+    #[serde(rename = "chat_member")]
+    ChatMember,
+    #[serde(rename = "chat_join_request")]
+    ChatJoinRequest,
+    #[serde(rename = "chat_boost")]
+    ChatBoost,
+    #[serde(rename = "removed_chat_boost")]
+    RemovedChatBoost,
+    #[serde(rename = "message_reaction")]
+    MessageReaction,
+    #[serde(rename = "message_reaction_count")]
+    MessageReactionCount,
+    #[serde(rename = "purchased_paid_media")]
+    PurchasedPaidMedia,
 }

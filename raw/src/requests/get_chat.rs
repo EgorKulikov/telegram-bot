@@ -2,7 +2,7 @@ use crate::requests::*;
 use crate::types::*;
 
 /// Use this method to get up to date information about the chat.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[must_use = "requests do nothing unless sent"]
 pub struct GetChat {
     chat_id: ChatRef,
@@ -10,7 +10,7 @@ pub struct GetChat {
 
 impl Request for GetChat {
     type Type = JsonRequestType<Self>;
-    type Response = JsonIdResponse<Chat>;
+    type Response = JsonIdResponse<ChatFullInfo>;
 
     fn serialize(&self) -> Result<HttpRequest, Error> {
         Self::Type::serialize(RequestUrl::method("getChat"), self)

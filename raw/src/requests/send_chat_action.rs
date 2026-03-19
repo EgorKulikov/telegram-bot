@@ -3,7 +3,7 @@ use crate::types::*;
 
 /// Strongly typed ChatAction. Instead of passing a String to the
 /// `chat_action` method, this is used.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[must_use = "requests do nothing unless sent"]
 pub enum ChatAction {
     #[serde(rename = "typing")]
@@ -22,12 +22,22 @@ pub enum ChatAction {
     UploadDocument,
     #[serde(rename = "find_location")]
     FindLocation,
+    #[serde(rename = "record_video_note")]
+    RecordVideoNote,
+    #[serde(rename = "upload_video_note")]
+    UploadVideoNote,
+    #[serde(rename = "record_voice")]
+    RecordVoice,
+    #[serde(rename = "upload_voice")]
+    UploadVoice,
+    #[serde(rename = "choose_sticker")]
+    ChooseSticker,
 }
 
 /// Use this method when you need to tell the user that something is happening on the bot's side.
 /// The status is set for 5 seconds or less (when a message arrives from your bot,
 /// Telegram clients clear its typing status).
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct SendChatAction {
     chat_id: ChatRef,
     action: ChatAction,

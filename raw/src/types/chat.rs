@@ -3,7 +3,7 @@ use serde::de::{Deserialize, Deserializer, Error};
 use crate::types::*;
 
 /// This object represents a Telegram user or bot.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Deserialize)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Serialize, Deserialize)]
 pub struct User {
     /// Unique identifier for this user or bot.
     pub id: UserId,
@@ -17,6 +17,20 @@ pub struct User {
     pub is_bot: bool,
     /// IETF language tag of the user's language
     pub language_code: Option<String>,
+    /// True, if this user is a Telegram Premium user.
+    pub is_premium: Option<bool>,
+    /// True, if this user added the bot to the attachment menu.
+    pub added_to_attachment_menu: Option<bool>,
+    /// True, if the bot can be invited to groups.
+    pub can_join_groups: Option<bool>,
+    /// True, if privacy mode is disabled for the bot.
+    pub can_read_all_group_messages: Option<bool>,
+    /// True, if the bot supports inline queries.
+    pub supports_inline_queries: Option<bool>,
+    /// True, if the bot can be connected to a Telegram Business account.
+    pub can_connect_to_business: Option<bool>,
+    /// True, if the bot has a main Web App.
+    pub has_main_web_app: Option<bool>,
 }
 
 /// This object represents a group.
@@ -132,6 +146,13 @@ impl<'de> Deserialize<'de> for Chat {
                 last_name: raw.last_name,
                 is_bot: false,
                 language_code: raw.language_code,
+                is_premium: None,
+                added_to_attachment_menu: None,
+                can_join_groups: None,
+                can_read_all_group_messages: None,
+                supports_inline_queries: None,
+                can_connect_to_business: None,
+                has_main_web_app: None,
             }),
             "group" => Chat::Group(Group {
                 id: raw.id.into(),

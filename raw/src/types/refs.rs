@@ -138,7 +138,7 @@ impl ToChatRef for MessageChat {
 
 impl ToChatRef for ChatMember {
     fn to_chat_ref(&self) -> ChatRef {
-        self.user.to_chat_ref()
+        self.user().to_chat_ref()
     }
 }
 
@@ -235,7 +235,7 @@ impl ToUserId for UserId {
 
 impl ToUserId for ChatMember {
     fn to_user_id(&self) -> UserId {
-        self.user.id
+        self.user().id
     }
 }
 
@@ -349,6 +349,7 @@ file_id_impls!(Sticker);
 file_id_impls!(Video);
 file_id_impls!(Voice);
 file_id_impls!(VideoNote);
+file_id_impls!(Animation);
 
 /// Unique file identifier reference.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

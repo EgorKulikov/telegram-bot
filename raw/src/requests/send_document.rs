@@ -5,12 +5,12 @@ use crate::types::*;
 
 /// Use this method to send general files. On success, the sent Message is returned.
 /// Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
-#[derive(Debug, Clone, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, PartialEq)]
 #[must_use = "requests do nothing unless sent"]
 pub struct SendDocument<'c> {
     chat_id: ChatRef,
     document: InputFile,
-    thumb: Option<InputFile>,
+    thumbnail: Option<InputFile>,
     caption: Option<Cow<'c, str>>,
     parse_mode: Option<ParseMode>,
     reply_to_message_id: Option<MessageId>,
@@ -24,7 +24,7 @@ impl<'c> ToMultipart for SendDocument<'c> {
             self,
             (chat_id (text));
             (document (raw));
-            (thumb (raw), optional);
+            (thumbnail (raw), optional);
             (caption (text), optional);
             (parse_mode (text), optional);
             (reply_to_message_id (text), optional);
@@ -52,7 +52,7 @@ impl<'c> SendDocument<'c> {
         Self {
             chat_id: chat.to_chat_ref(),
             document: document.into(),
-            thumb: None,
+            thumbnail: None,
             caption: None,
             parse_mode: None,
             reply_to_message_id: None,
@@ -61,11 +61,11 @@ impl<'c> SendDocument<'c> {
         }
     }
 
-    pub fn thumb<V>(&mut self, thumb: V) -> &mut Self
+    pub fn thumbnail<V>(&mut self, thumbnail: V) -> &mut Self
     where
         V: Into<InputFileUpload>,
     {
-        self.thumb = Some(thumb.into().into());
+        self.thumbnail = Some(thumbnail.into().into());
         self
     }
 

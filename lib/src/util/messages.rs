@@ -58,6 +58,33 @@ impl MessageText for MessageKind {
             MessageKind::MigrateToChatId { .. } => None,
             MessageKind::MigrateFromChatId { .. } => None,
             MessageKind::PinnedMessage { data } => data.text(),
+            MessageKind::Animation { caption, .. } => caption.to_owned(),
+            MessageKind::Dice { .. } => None,
+            MessageKind::Game { .. } => None,
+            MessageKind::VideoChatScheduled { .. } => None,
+            MessageKind::VideoChatStarted => None,
+            MessageKind::VideoChatEnded { .. } => None,
+            MessageKind::VideoChatParticipantsInvited { .. } => None,
+            MessageKind::MessageAutoDeleteTimerChanged { .. } => None,
+            MessageKind::WriteAccessAllowed { .. } => None,
+            MessageKind::ForumTopicCreated { data } => Some(data.name.to_owned()),
+            MessageKind::ForumTopicEdited { data } => data.name.to_owned(),
+            MessageKind::ForumTopicClosed => None,
+            MessageKind::ForumTopicReopened => None,
+            MessageKind::GeneralForumTopicHidden => None,
+            MessageKind::GeneralForumTopicUnhidden => None,
+            MessageKind::ProximityAlertTriggered { .. } => None,
+            MessageKind::UsersShared { .. } => None,
+            MessageKind::ChatShared { .. } => None,
+            MessageKind::Giveaway { .. } => None,
+            MessageKind::GiveawayCreated { .. } => None,
+            MessageKind::GiveawayWinners { .. } => None,
+            MessageKind::GiveawayCompleted { .. } => None,
+            MessageKind::Story { .. } => None,
+            MessageKind::PaidMedia { .. } => None,
+            MessageKind::ChatBackgroundSet { .. } => None,
+            MessageKind::WebAppData { .. } => None,
+            MessageKind::BoostAdded { .. } => None,
             MessageKind::Unknown { .. } => None,
         }
     }
@@ -101,7 +128,7 @@ impl MessageGetFiles for MessageKind {
             MessageKind::Audio { data } => Some(vec![data.get_file()]),
             MessageKind::Document { data, .. } => {
                 let mut files = vec![data.get_file()];
-                if let Some(thumb) = &data.thumb {
+                if let Some(thumb) = &data.thumbnail {
                     files.push(thumb.get_file());
                 }
                 Some(files)
@@ -112,7 +139,7 @@ impl MessageGetFiles for MessageKind {
             MessageKind::Sticker { data } => Some(vec![data.get_file()]),
             MessageKind::Video { data, .. } => {
                 let mut files = vec![data.get_file()];
-                if let Some(thumb) = &data.thumb {
+                if let Some(thumb) = &data.thumbnail {
                     files.push(thumb.get_file());
                 }
                 Some(files)
@@ -120,29 +147,22 @@ impl MessageGetFiles for MessageKind {
             MessageKind::Voice { data } => Some(vec![data.get_file()]),
             MessageKind::VideoNote { data, .. } => {
                 let mut files = vec![data.get_file()];
-                if let Some(thumb) = &data.thumb {
+                if let Some(thumb) = &data.thumbnail {
                     files.push(thumb.get_file());
                 }
                 Some(files)
             }
-            MessageKind::Contact { .. } => None,
-            MessageKind::Location { .. } => None,
-            MessageKind::Poll { .. } => None,
-            MessageKind::Venue { .. } => None,
-            MessageKind::NewChatMembers { .. } => None,
-            MessageKind::LeftChatMember { .. } => None,
-            MessageKind::NewChatTitle { .. } => None,
+            MessageKind::Animation { data, .. } => {
+                let mut files = vec![data.get_file()];
+                if let Some(thumb) = &data.thumbnail {
+                    files.push(thumb.get_file());
+                }
+                Some(files)
+            }
             MessageKind::NewChatPhoto { data } => {
                 Some(data.into_iter().map(|f| f.get_file()).collect())
             }
-            MessageKind::DeleteChatPhoto => None,
-            MessageKind::GroupChatCreated => None,
-            MessageKind::SupergroupChatCreated => None,
-            MessageKind::ChannelChatCreated => None,
-            MessageKind::MigrateToChatId { .. } => None,
-            MessageKind::MigrateFromChatId { .. } => None,
-            MessageKind::PinnedMessage { .. } => None,
-            MessageKind::Unknown { .. } => None,
+            _ => None,
         }
     }
 }

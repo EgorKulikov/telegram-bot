@@ -6,7 +6,7 @@ use crate::requests::*;
 use crate::types::*;
 
 /// Use this method to send polls.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[must_use = "requests do nothing unless sent"]
 pub struct SendPoll<'q, 'o, 'e> {
     chat_id: ChatRef,

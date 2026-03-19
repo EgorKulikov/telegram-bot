@@ -6,7 +6,7 @@ use tokio::time::sleep;
 
 use telegram_bot::prelude::*;
 use telegram_bot::{
-    Api, Error, Message, MessageKind, Poll, PollAnswer, SendPoll, UpdateKind, User,
+    Api, Error, Message, MessageKind, Poll, SendPoll, UpdateKind,
 };
 
 fn make_test_poll<'p>(message: Message) -> SendPoll<'p, 'p, 'p> {
@@ -91,14 +91,13 @@ async fn main() -> Result<(), Error> {
                 "Poll update - {} with total voters {}",
                 id, total_voter_count
             ),
-            UpdateKind::PollAnswer(PollAnswer {
-                poll_id,
-                user: User { first_name, .. },
-                option_ids,
-            }) => println!(
-                "In poll {} {} voted for {:?}",
-                poll_id, first_name, option_ids
-            ),
+            UpdateKind::PollAnswer(ref answer) => {
+                let name = answer.user.as_ref().map(|u| u.first_name.as_str()).unwrap_or("anonymous");
+                println!(
+                    "In poll {} {} voted for {:?}",
+                    answer.poll_id, name, answer.option_ids
+                );
+            }
             _ => (),
         }
     }

@@ -2,7 +2,7 @@ use std::ops::Not;
 
 use crate::types::*;
 
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum ReplyMarkup {
     InlineKeyboardMarkup(InlineKeyboardMarkup),
@@ -42,15 +42,19 @@ impl From<ForceReply> for ReplyMarkup {
 }
 
 /// This object represents a custom keyboard with reply options.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ReplyKeyboardMarkup {
     keyboard: Vec<Vec<KeyboardButton>>,
     #[serde(skip_serializing_if = "Not::not")]
     resize_keyboard: bool,
     #[serde(skip_serializing_if = "Not::not")]
     one_time_keyboard: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    input_field_placeholder: Option<String>,
     #[serde(skip_serializing_if = "Not::not")]
     selective: bool,
+    #[serde(skip_serializing_if = "Not::not")]
+    is_persistent: bool,
 }
 
 impl ReplyKeyboardMarkup {
@@ -59,7 +63,9 @@ impl ReplyKeyboardMarkup {
             keyboard: Vec::new(),
             resize_keyboard: false,
             one_time_keyboard: false,
+            input_field_placeholder: None,
             selective: false,
+            is_persistent: false,
         }
     }
 
@@ -114,7 +120,7 @@ impl From<Vec<Vec<KeyboardButton>>> for ReplyKeyboardMarkup {
 }
 
 /// This object represents one button of the reply keyboard.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KeyboardButton {
     text: String,
     #[serde(skip_serializing_if = "Not::not")]
@@ -166,7 +172,7 @@ impl From<String> for KeyboardButton {
 /// By default, custom keyboards are displayed until a new keyboard is sent
 /// by a bot. An exception is made for one-time keyboards that are hidden
 /// immediately after the user presses a button (see ReplyKeyboardMarkup).
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ReplyKeyboardRemove {
     remove_keyboard: True,
     #[serde(skip_serializing_if = "Not::not")]
@@ -192,7 +198,7 @@ impl ReplyKeyboardRemove {
 }
 
 /// This object represents an inline keyboard that appears right next to the message it belongs to.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InlineKeyboardMarkup {
     inline_keyboard: Vec<Vec<InlineKeyboardButton>>,
 }
@@ -225,7 +231,7 @@ impl From<Vec<Vec<InlineKeyboardButton>>> for InlineKeyboardMarkup {
 }
 
 /// This object represents one button of an inline keyboard.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InlineKeyboardButton {
     text: String,
     #[serde(flatten)]
@@ -275,22 +281,26 @@ impl InlineKeyboardButton {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum InlineKeyboardButtonKind {
     #[serde(rename = "url")]
-    Url(String), // TODO(knsd): Url?
+    Url(String),
     #[serde(rename = "callback_data")]
-    CallbackData(String), // TODO(knsd) Validate size?
+    CallbackData(String),
     #[serde(rename = "switch_inline_query")]
     SwitchInlineQuery(String),
     #[serde(rename = "switch_inline_query_current_chat")]
     SwitchInlineQueryCurrentChat(String),
-    // #[serde(rename = "callback_game")]
-    //  CallbackGame(CallbackGame),
-    // #[serde(rename = "pay")]
-    //  Pay,
-    // #[serde(rename = "login_url")]
-    //  LoginUrl(LoginUrl),
+    #[serde(rename = "switch_inline_query_chosen_chat")]
+    SwitchInlineQueryChosenChat(super::switchinline::SwitchInlineQueryChosenChat),
+    #[serde(rename = "login_url")]
+    LoginUrl(super::login_url::LoginUrl),
+    #[serde(rename = "web_app")]
+    WebApp(super::web_app::WebAppInfo),
+    #[serde(rename = "pay")]
+    Pay(bool),
+    #[serde(rename = "copy_text")]
+    CopyText(super::copy_text_button::CopyTextButton),
 }
 
 /// Upon receiving a message with this object, Telegram clients will
@@ -298,9 +308,11 @@ pub enum InlineKeyboardButtonKind {
 /// selected the bot‘s message and tapped ’Reply'). This can be
 /// extremely useful if you want to create user-friendly step-by-step
 /// interfaces without having to sacrifice privacy mod
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ForceReply {
     force_reply: True,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    input_field_placeholder: Option<String>,
     #[serde(skip_serializing_if = "Not::not")]
     selective: bool,
 }
@@ -309,6 +321,7 @@ impl ForceReply {
     pub fn new() -> Self {
         Self {
             force_reply: True,
+            input_field_placeholder: None,
             selective: false,
         }
     }

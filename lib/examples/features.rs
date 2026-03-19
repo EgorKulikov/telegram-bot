@@ -32,14 +32,18 @@ async fn test_reply(api: Api, message: Message) -> Result<(), Error> {
     api.send(message.text_reply("Reply to message")).await?;
     api.send(message.chat.text("Text to message chat")).await?;
 
-    api.send(message.from.as_ref().unwrap().text("Private text")).await?;
+    if let Some(ref from) = message.from {
+        api.send(from.text("Private text")).await?;
+    }
     Ok(())
 }
 
 async fn test_forward(api: Api, message: Message) -> Result<(), Error> {
     api.send(message.forward(&message.chat)).await?;
 
-    api.send(message.forward(&message.as_ref().unwrap().from)).await?;
+    if let Some(ref from) = message.from {
+        api.send(message.forward(from)).await?;
+    }
     Ok(())
 }
 
@@ -58,7 +62,7 @@ async fn test_edit_message(api: Api, message: Message) -> Result<(), Error> {
 
 async fn test_get_chat(api: Api, message: Message) -> Result<(), Error> {
     let chat = api.send(message.chat.get_chat()).await?;
-    api.send(chat.text(format!("Chat id {}", chat.id())))
+    api.send(message.chat.text(format!("Chat id {}", chat.id)))
         .await?;
     Ok(())
 }
@@ -67,7 +71,7 @@ async fn test_get_chat_administrators(api: Api, message: Message) -> Result<(), 
     let administrators = api.send(message.chat.get_administrators()).await?;
     let mut response = Vec::new();
     for member in administrators {
-        response.push(member.user.first_name.clone())
+        response.push(member.user().first_name.clone())
     }
     api.send(message.text_reply(format!("Administrators: {}", response.join(", "))))
         .await?;
@@ -82,19 +86,21 @@ async fn test_get_chat_members_count(api: Api, message: Message) -> Result<(), E
 }
 
 async fn test_get_chat_member(api: Api, message: Message) -> Result<(), Error> {
-    let member = api.send(message.chat.get_member(&message.as_ref().unwrap().from)).await?;
-    let first_name = member.user.first_name.clone();
-    let status = member.status;
-    api.send(message.text_reply(format!("Member {}, status {:?}", first_name, status)))
-        .await?;
+    if let Some(ref from) = message.from {
+        let member = api.send(message.chat.get_member(from)).await?;
+        let first_name = member.user().first_name.clone();
+        api.send(message.text_reply(format!("Member {}, status {:?}", first_name, member)))
+            .await?;
+    }
     Ok(())
 }
 
 async fn test_get_user_profile_photos(api: Api, message: Message) -> Result<(), Error> {
-    let photos = api.send(message.from.as_ref().unwrap().get_user_profile_photos()).await?;
-
-    api.send(message.text_reply(format!("Found photos: {}", photos.total_count)))
-        .await?;
+    if let Some(ref from) = message.from {
+        let photos = api.send(from.get_user_profile_photos()).await?;
+        api.send(message.text_reply(format!("Found photos: {}", photos.total_count)))
+            .await?;
+    }
     Ok(())
 }
 
