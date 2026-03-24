@@ -8,7 +8,6 @@ pub struct Animation {
     pub width: Integer,
     pub height: Integer,
     pub duration: Integer,
-    #[serde(alias = "thumb")]
     pub thumbnail: Option<PhotoSize>,
     pub file_name: Option<String>,
     pub mime_type: Option<String>,

@@ -7,7 +7,6 @@ pub struct StickerSet {
     pub title: String,
     pub sticker_type: String,
     pub stickers: Vec<Sticker>,
-    #[serde(alias = "thumb")]
     pub thumbnail: Option<PhotoSize>,
 }
 

@@ -1235,7 +1235,6 @@ pub struct Audio {
     /// Title of the audio as defined by sender or by audio tags.
     pub title: Option<String>,
     /// Thumbnail of the album cover to which the music file belongs.
-    #[serde(alias = "thumb")]
     pub thumbnail: Option<PhotoSize>,
     /// Original filename as defined by sender.
     pub file_name: Option<String>,
@@ -1253,7 +1252,6 @@ pub struct Document {
     /// Unique identifier for this file, which is supposed to be the same over time and for different bots.
     pub file_unique_id: String,
     /// Document thumbnail as defined by sender.
-    #[serde(alias = "thumb")]
     pub thumbnail: Option<PhotoSize>,
     /// Original filename as defined by sender.
     pub file_name: Option<String>,
@@ -1282,7 +1280,6 @@ pub struct Sticker {
     /// True, if the sticker is a video sticker.
     pub is_video: Option<bool>,
     /// Sticker thumbnail in .webp or .jpg format.
-    #[serde(alias = "thumb")]
     pub thumbnail: Option<PhotoSize>,
     /// Emoji associated with the sticker.
     pub emoji: Option<String>,
@@ -1310,7 +1307,6 @@ pub struct Video {
     /// Duration of the video in seconds as defined by sender.
     pub duration: Integer,
     /// Video thumbnail.
-    #[serde(alias = "thumb")]
     pub thumbnail: Option<PhotoSize>,
     /// Original filename as defined by sender.
     pub file_name: Option<String>,
@@ -1346,7 +1342,6 @@ pub struct VideoNote {
     /// Duration of the video in seconds as defined by sender.
     pub duration: Integer,
     /// Video thumbnail.
-    #[serde(alias = "thumb")]
     pub thumbnail: Option<PhotoSize>,
     /// File size.
     pub file_size: Option<Integer>,
