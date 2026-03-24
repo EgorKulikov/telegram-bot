@@ -48,4 +48,8 @@ pub struct ChatFullInfo {
     pub custom_emoji_sticker_set_name: Option<String>,
     pub linked_chat_id: Option<Integer>,
     pub location: Option<super::chat_location::ChatLocation>,
+    pub is_direct_messages: Option<bool>,
+    pub parent_chat: Option<Chat>,
+    pub accepted_gift_types: Option<super::unique_gift::AcceptedGiftTypes>,
+    pub paid_message_star_count: Option<Integer>,
 }

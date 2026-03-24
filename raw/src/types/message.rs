@@ -1,4 +1,5 @@
 use serde::de::{Deserialize, Deserializer, Error};
+use serde::ser::Serialize;
 
 use crate::types::*;
 use crate::url::*;
@@ -308,9 +309,85 @@ pub enum MessageKind {
     WebAppData {
         data: super::web_app::WebAppData,
     },
-    /// Service message: data sent by a Web App.
+    /// Service message: user boosted the chat.
     BoostAdded {
         boost_count: Integer,
+    },
+    /// Message is an invoice for a payment.
+    Invoice {
+        data: super::successful_payment::Invoice,
+    },
+    /// Service message: successful payment.
+    SuccessfulPayment {
+        data: super::successful_payment::SuccessfulPayment,
+    },
+    /// Service message: refunded payment.
+    RefundedPayment {
+        data: super::successful_payment::RefundedPayment,
+    },
+    /// Service message: a gift was sent or received.
+    Gift {
+        data: super::unique_gift::GiftInfo,
+    },
+    /// Service message: a unique gift was sent or received.
+    UniqueGift {
+        data: super::unique_gift::UniqueGiftInfo,
+    },
+    /// Service message: a gift upgrade was sent.
+    GiftUpgradeSent {
+        data: super::unique_gift::GiftInfo,
+    },
+    /// Service message: the price for paid messages has changed.
+    PaidMessagePriceChanged {
+        data: super::successful_payment::PaidMessagePriceChanged,
+    },
+    /// Message is a checklist.
+    Checklist {
+        data: super::checklist::Checklist,
+    },
+    /// Service message: checklist tasks were completed.
+    ChecklistTasksDone {
+        data: super::checklist::ChecklistTasksDone,
+    },
+    /// Service message: checklist tasks were added.
+    ChecklistTasksAdded {
+        data: super::checklist::ChecklistTasksAdded,
+    },
+    /// Service message: the domain name of the website on which the user has logged in.
+    ConnectedWebsite {
+        data: String,
+    },
+    /// Service message: the chat owner has left.
+    ChatOwnerLeft {
+        data: super::chat_owner::ChatOwnerLeft,
+    },
+    /// Service message: the chat owner has changed.
+    ChatOwnerChanged {
+        data: super::chat_owner::ChatOwnerChanged,
+    },
+    /// Service message: the price for direct messages has changed.
+    DirectMessagePriceChanged {
+        data: super::direct_messages::DirectMessagePriceChanged,
+    },
+    /// Service message: a suggested post was approved.
+    SuggestedPostApproved {
+        data: super::suggested_post::SuggestedPostApproved,
+    },
+    /// Service message: a suggested post approval failed.
+    SuggestedPostApprovalFailed {
+        data: super::suggested_post::SuggestedPostApprovalFailed,
+    },
+    /// Service message: a suggested post was declined.
+    SuggestedPostDeclined {
+        data: super::suggested_post::SuggestedPostDeclined,
+    },
+    /// Service message: a suggested post was paid.
+    SuggestedPostPaid {
+        data: super::suggested_post::SuggestedPostPaid,
+    },
+    /// Service message: a suggested post was refunded.
+    SuggestedPostRefunded {
+        data: super::suggested_post::SuggestedPostRefunded,
     },
     #[doc(hidden)]
     Unknown { raw: RawMessage },
@@ -498,6 +575,25 @@ impl Message {
         if let Some(count) = raw.boost_added {
             return make_message(MessageKind::BoostAdded { boost_count: count });
         }
+        maybe_field!(invoice, Invoice);
+        maybe_field!(successful_payment, SuccessfulPayment);
+        maybe_field!(refunded_payment, RefundedPayment);
+        maybe_field!(gift, Gift);
+        maybe_field!(unique_gift, UniqueGift);
+        maybe_field!(gift_upgrade_sent, GiftUpgradeSent);
+        maybe_field!(paid_message_price_changed, PaidMessagePriceChanged);
+        maybe_field!(checklist, Checklist);
+        maybe_field!(checklist_tasks_done, ChecklistTasksDone);
+        maybe_field!(checklist_tasks_added, ChecklistTasksAdded);
+        maybe_field!(connected_website, ConnectedWebsite);
+        maybe_field!(chat_owner_left, ChatOwnerLeft);
+        maybe_field!(chat_owner_changed, ChatOwnerChanged);
+        maybe_field!(direct_message_price_changed, DirectMessagePriceChanged);
+        maybe_field!(suggested_post_approved, SuggestedPostApproved);
+        maybe_field!(suggested_post_approval_failed, SuggestedPostApprovalFailed);
+        maybe_field!(suggested_post_declined, SuggestedPostDeclined);
+        maybe_field!(suggested_post_paid, SuggestedPostPaid);
+        maybe_field!(suggested_post_refunded, SuggestedPostRefunded);
 
         make_message(MessageKind::Unknown { raw: raw })
     }
@@ -664,6 +760,25 @@ impl ChannelPost {
         maybe_field!(giveaway_completed, GiveawayCompleted);
         maybe_field!(story, Story);
         maybe_field!(paid_media, PaidMedia);
+        maybe_field!(invoice, Invoice);
+        maybe_field!(successful_payment, SuccessfulPayment);
+        maybe_field!(refunded_payment, RefundedPayment);
+        maybe_field!(gift, Gift);
+        maybe_field!(unique_gift, UniqueGift);
+        maybe_field!(gift_upgrade_sent, GiftUpgradeSent);
+        maybe_field!(paid_message_price_changed, PaidMessagePriceChanged);
+        maybe_field!(checklist, Checklist);
+        maybe_field!(checklist_tasks_done, ChecklistTasksDone);
+        maybe_field!(checklist_tasks_added, ChecklistTasksAdded);
+        maybe_field!(connected_website, ConnectedWebsite);
+        maybe_field!(chat_owner_left, ChatOwnerLeft);
+        maybe_field!(chat_owner_changed, ChatOwnerChanged);
+        maybe_field!(direct_message_price_changed, DirectMessagePriceChanged);
+        maybe_field!(suggested_post_approved, SuggestedPostApproved);
+        maybe_field!(suggested_post_approval_failed, SuggestedPostApprovalFailed);
+        maybe_field!(suggested_post_declined, SuggestedPostDeclined);
+        maybe_field!(suggested_post_paid, SuggestedPostPaid);
+        maybe_field!(suggested_post_refunded, SuggestedPostRefunded);
 
         make_message(MessageKind::Unknown { raw: raw })
     }
@@ -875,25 +990,55 @@ pub struct RawMessage {
     /// If the sender of the message boosted the chat, the number of boosts added.
     pub boost_added: Option<Integer>,
     /// Message is an invoice for a payment.
-    pub invoice: Option<serde_json::Value>,
+    pub invoice: Option<super::successful_payment::Invoice>,
     /// Message is a service message about a successful payment.
-    pub successful_payment: Option<serde_json::Value>,
+    pub successful_payment: Option<super::successful_payment::SuccessfulPayment>,
     /// Message is a service message about a refunded payment.
-    pub refunded_payment: Option<serde_json::Value>,
+    pub refunded_payment: Option<super::successful_payment::RefundedPayment>,
     /// The message is a service message about a gift sent or received.
-    pub gift: Option<serde_json::Value>,
+    pub gift: Option<super::unique_gift::GiftInfo>,
     /// The message is a service message about a unique gift sent or received.
-    pub unique_gift: Option<serde_json::Value>,
+    pub unique_gift: Option<super::unique_gift::UniqueGiftInfo>,
     /// Service message: a user in the chat was granted premium subscription by another user.
-    pub gift_upgrade_sent: Option<serde_json::Value>,
+    pub gift_upgrade_sent: Option<super::unique_gift::GiftInfo>,
     /// Service message: the price for paid messages has changed.
-    pub paid_message_price_changed: Option<serde_json::Value>,
+    pub paid_message_price_changed: Option<super::successful_payment::PaidMessagePriceChanged>,
     /// Message is a checklist.
-    pub checklist: Option<serde_json::Value>,
+    pub checklist: Option<super::checklist::Checklist>,
     /// Service message: checklist tasks were completed.
-    pub checklist_tasks_done: Option<serde_json::Value>,
+    pub checklist_tasks_done: Option<super::checklist::ChecklistTasksDone>,
     /// Service message: checklist tasks were added.
-    pub checklist_tasks_added: Option<serde_json::Value>,
+    pub checklist_tasks_added: Option<super::checklist::ChecklistTasksAdded>,
+    /// Service message: a suggested post was approved.
+    pub suggested_post_approved: Option<super::suggested_post::SuggestedPostApproved>,
+    /// Service message: a suggested post approval failed.
+    pub suggested_post_approval_failed: Option<super::suggested_post::SuggestedPostApprovalFailed>,
+    /// Service message: a suggested post was declined.
+    pub suggested_post_declined: Option<super::suggested_post::SuggestedPostDeclined>,
+    /// Service message: a suggested post was paid.
+    pub suggested_post_paid: Option<super::suggested_post::SuggestedPostPaid>,
+    /// Service message: a suggested post was refunded.
+    pub suggested_post_refunded: Option<super::suggested_post::SuggestedPostRefunded>,
+    /// The domain name of the website on which the user has logged in.
+    pub connected_website: Option<String>,
+    /// Telegram Passport data.
+    pub passport_data: Option<super::passport::PassportData>,
+    /// Service message: the chat owner has left.
+    pub chat_owner_left: Option<super::chat_owner::ChatOwnerLeft>,
+    /// Service message: the chat owner has changed.
+    pub chat_owner_changed: Option<super::chat_owner::ChatOwnerChanged>,
+    /// Service message: the price for direct messages has changed.
+    pub direct_message_price_changed: Option<super::direct_messages::DirectMessagePriceChanged>,
+    /// Information about the suggested post.
+    pub suggested_post_info: Option<super::suggested_post::SuggestedPostInfo>,
+    /// The message was sent in a direct messages topic.
+    pub direct_messages_topic: Option<super::direct_messages::DirectMessagesTopic>,
+    /// The tag of the sender in the chat.
+    pub sender_tag: Option<String>,
+    /// True, if the message is a paid post.
+    pub is_paid_post: Option<bool>,
+    /// For replies to a checklist task, the identifier of the replied task.
+    pub reply_to_checklist_task_id: Option<Integer>,
     /// Inline keyboard attached to the message.
     pub reply_markup: Option<super::reply_markup::InlineKeyboardMarkup>,
 }
@@ -934,6 +1079,56 @@ pub enum MessageEntityKind {
     CustomEmoji(String),
     #[doc(hidden)]
     Unknown(RawMessageEntity),
+}
+
+impl Serialize for MessageEntity {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use self::MessageEntityKind::*;
+
+        let mut raw = RawMessageEntity {
+            type_: match &self.kind {
+                Mention => "mention".to_string(),
+                Hashtag => "hashtag".to_string(),
+                CashTag => "cashtag".to_string(),
+                BotCommand => "bot_command".to_string(),
+                Url => "url".to_string(),
+                Email => "email".to_string(),
+                PhoneNumber => "phone_number".to_string(),
+                Bold => "bold".to_string(),
+                Italic => "italic".to_string(),
+                Underline => "underline".to_string(),
+                Strikethrough => "strikethrough".to_string(),
+                Spoiler => "spoiler".to_string(),
+                Blockquote => "blockquote".to_string(),
+                ExpandableBlockquote => "expandable_blockquote".to_string(),
+                Code => "code".to_string(),
+                Pre { .. } => "pre".to_string(),
+                TextLink(_) => "text_link".to_string(),
+                TextMention(_) => "text_mention".to_string(),
+                CustomEmoji(_) => "custom_emoji".to_string(),
+                Unknown(raw) => return raw.serialize(serializer),
+            },
+            offset: self.offset,
+            length: self.length,
+            url: None,
+            user: None,
+            language: None,
+            custom_emoji_id: None,
+        };
+
+        match &self.kind {
+            Pre { language } => raw.language = language.clone(),
+            TextLink(url) => raw.url = Some(url.clone()),
+            TextMention(user) => raw.user = Some(user.clone()),
+            CustomEmoji(id) => raw.custom_emoji_id = Some(id.clone()),
+            _ => {}
+        }
+
+        raw.serialize(serializer)
+    }
 }
 
 impl<'de> Deserialize<'de> for MessageEntity {
