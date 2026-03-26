@@ -258,6 +258,7 @@ impl<'de> serde::Deserialize<'de> for InlineKeyboardButton {
             web_app: Option<super::web_app::WebAppInfo>,
             pay: Option<bool>,
             copy_text: Option<super::copy_text_button::CopyTextButton>,
+            callback_game: Option<serde_json::Value>,
         }
 
         let raw = Raw::deserialize(deserializer)?;
@@ -279,6 +280,8 @@ impl<'de> serde::Deserialize<'de> for InlineKeyboardButton {
             InlineKeyboardButtonKind::Pay(v)
         } else if let Some(v) = raw.copy_text {
             InlineKeyboardButtonKind::CopyText(v)
+        } else if raw.callback_game.is_some() {
+            InlineKeyboardButtonKind::Unknown
         } else {
             return Err(D::Error::custom(
                 "no variant of InlineKeyboardButtonKind found",
@@ -355,6 +358,7 @@ pub enum InlineKeyboardButtonKind {
     Pay(bool),
     #[serde(rename = "copy_text")]
     CopyText(super::copy_text_button::CopyTextButton),
+    Unknown,
 }
 
 /// Upon receiving a message with this object, Telegram clients will
