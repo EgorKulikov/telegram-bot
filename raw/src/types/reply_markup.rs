@@ -231,11 +231,65 @@ impl From<Vec<Vec<InlineKeyboardButton>>> for InlineKeyboardMarkup {
 }
 
 /// This object represents one button of an inline keyboard.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct InlineKeyboardButton {
     text: String,
     #[serde(flatten)]
     kind: InlineKeyboardButtonKind,
+}
+
+impl<'de> serde::Deserialize<'de> for InlineKeyboardButton {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error;
+
+        #[derive(Deserialize)]
+        struct Raw {
+            text: String,
+            url: Option<String>,
+            callback_data: Option<String>,
+            switch_inline_query: Option<String>,
+            switch_inline_query_current_chat: Option<String>,
+            switch_inline_query_chosen_chat:
+                Option<super::switchinline::SwitchInlineQueryChosenChat>,
+            login_url: Option<super::login_url::LoginUrl>,
+            web_app: Option<super::web_app::WebAppInfo>,
+            pay: Option<bool>,
+            copy_text: Option<super::copy_text_button::CopyTextButton>,
+        }
+
+        let raw = Raw::deserialize(deserializer)?;
+        let kind = if let Some(v) = raw.url {
+            InlineKeyboardButtonKind::Url(v)
+        } else if let Some(v) = raw.callback_data {
+            InlineKeyboardButtonKind::CallbackData(v)
+        } else if let Some(v) = raw.switch_inline_query {
+            InlineKeyboardButtonKind::SwitchInlineQuery(v)
+        } else if let Some(v) = raw.switch_inline_query_current_chat {
+            InlineKeyboardButtonKind::SwitchInlineQueryCurrentChat(v)
+        } else if let Some(v) = raw.switch_inline_query_chosen_chat {
+            InlineKeyboardButtonKind::SwitchInlineQueryChosenChat(v)
+        } else if let Some(v) = raw.login_url {
+            InlineKeyboardButtonKind::LoginUrl(v)
+        } else if let Some(v) = raw.web_app {
+            InlineKeyboardButtonKind::WebApp(v)
+        } else if let Some(v) = raw.pay {
+            InlineKeyboardButtonKind::Pay(v)
+        } else if let Some(v) = raw.copy_text {
+            InlineKeyboardButtonKind::CopyText(v)
+        } else {
+            return Err(D::Error::custom(
+                "no variant of InlineKeyboardButtonKind found",
+            ));
+        };
+
+        Ok(InlineKeyboardButton {
+            text: raw.text,
+            kind,
+        })
+    }
 }
 
 impl InlineKeyboardButton {
@@ -281,7 +335,7 @@ impl InlineKeyboardButton {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum InlineKeyboardButtonKind {
     #[serde(rename = "url")]
     Url(String),
