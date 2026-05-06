@@ -572,8 +572,8 @@ impl Message {
         maybe_field!(paid_media, PaidMedia);
         maybe_field!(chat_background_set, ChatBackgroundSet);
         maybe_field!(web_app_data, WebAppData);
-        if let Some(count) = raw.boost_added {
-            return make_message(MessageKind::BoostAdded { boost_count: count });
+        if let Some(data) = raw.boost_added {
+            return make_message(MessageKind::BoostAdded { boost_count: data.boost_count });
         }
         maybe_field!(invoice, Invoice);
         maybe_field!(successful_payment, SuccessfulPayment);
@@ -988,7 +988,7 @@ pub struct RawMessage {
     /// The number of Telegram Stars that were paid by the sender to send the message.
     pub paid_star_count: Option<Integer>,
     /// If the sender of the message boosted the chat, the number of boosts added.
-    pub boost_added: Option<Integer>,
+    pub boost_added: Option<super::chat_boost_added::ChatBoostAdded>,
     /// Message is an invoice for a payment.
     pub invoice: Option<super::successful_payment::Invoice>,
     /// Message is a service message about a successful payment.
