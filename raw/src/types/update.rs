@@ -1,15 +1,38 @@
+use serde::de::{Deserialize, Deserializer, Error};
+use serde_value::Value;
+
 use crate::types::*;
 
 /// This object represents an incoming update.
-#[derive(Debug, Clone, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Update {
     /// The update's unique identifier. Update identifiers start from a certain
     /// positive number and increase sequentially.
-    #[serde(rename = "update_id")]
     pub id: Integer,
     /// Kind of the incoming update.
-    #[serde(flatten)]
     pub kind: UpdateKind,
+}
+
+impl<'de> Deserialize<'de> for Update {
+    fn deserialize<D>(deserializer: D) -> Result<Update, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let mut map = match Value::deserialize(deserializer)? {
+            Value::Map(map) => map,
+            _ => return Err(D::Error::custom("update is not an object")),
+        };
+        let id = match map.remove(&Value::String("update_id".to_string())) {
+            Some(value) => Integer::deserialize(value).map_err(D::Error::custom)?,
+            None => return Err(D::Error::missing_field("update_id")),
+        };
+        // An update the types can't represent must not poison the whole
+        // getUpdates response: fall back to `UpdateKind::Error` so the stream
+        // still sees the id and advances its offset past this update.
+        let kind = UpdateKind::deserialize(Value::Map(map))
+            .unwrap_or_else(|err| UpdateKind::Error(err.to_string()));
+        Ok(Update { id, kind })
+    }
 }
 
 /// Kind of the incoming update.

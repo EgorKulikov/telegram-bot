@@ -54,3 +54,32 @@ make_test!(regression_test_208, |update: Update| {
 
     assert!(false)
 });
+
+make_test!(checklist_tasks_added, |update: Update| {
+    if let UpdateKind::Message(message) = update.kind {
+        if let MessageKind::ChecklistTasksAdded { .. } = message.kind {
+            return ();
+        }
+    }
+    assert!(false)
+});
+
+make_test!(checklist_tasks_done, |update: Update| {
+    if let UpdateKind::Message(message) = update.kind {
+        if let MessageKind::ChecklistTasksDone { .. } = message.kind {
+            return ();
+        }
+    }
+    assert!(false)
+});
+
+#[test]
+fn unparseable_update_falls_back_to_error_kind() {
+    let data = br#"{"update_id":42,"some_future_update_type":{"foo":1}}"#;
+    let update = serde_json::from_slice::<Update>(data).unwrap();
+    assert_eq!(update.id, 42);
+    match update.kind {
+        UpdateKind::Error(_) | UpdateKind::Unknown => (),
+        other => panic!("expected Error/Unknown kind, got {:?}", other),
+    }
+}
